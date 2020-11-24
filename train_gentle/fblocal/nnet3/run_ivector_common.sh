@@ -102,7 +102,7 @@ if [ $stage -le 4 ]; then
   # To train a diagonal UBM we don't need very much data, so use the smallest
   # subset.
   echo "[$(date +'%F %T')] $0: train diag ubm" | lolcat
-  steps/online/nnet2/train_diag_ubm.sh --cmd "$train_cmd" --nj 10 --num-frames 400000 \
+  steps/online/nnet2/train_diag_ubm.sh --cmd "$train_cmd" --nj 5 --num-frames 400000 \
     data/train_rvb_hires_30k 512 exp/nnet3/pca_transform \
     exp/nnet3/diag_ubm
 fi
@@ -112,7 +112,7 @@ if [ $stage -le 5 ]; then
   # this one has a fairly small dim (defaults to 100) so we don't use all of it,
   # we use just the 100k subset (about one sixteenth of the data).
   echo "[$(date +'%F %T')] $0: train ivector extractor" | lolcat
-  steps/online/nnet2/train_ivector_extractor.sh --cmd "$train_cmd" --nj 10 \
+  steps/online/nnet2/train_ivector_extractor.sh --cmd "$train_cmd" --nj 5 \
     data/train_rvb_hires_100k exp/nnet3/diag_ubm \
     exp/nnet3/extractor || exit 1;
 fi

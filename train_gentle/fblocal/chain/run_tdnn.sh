@@ -89,7 +89,7 @@ if [ $stage -le 9 ]; then
     data/train_rvb_min${min_seg_len}_hires data/train_rvb_min${min_seg_len}_hires_max2
   ivectordir=exp/nnet3/ivectors_train_min${min_seg_len}
 
-  steps/online/nnet2/extract_ivectors_online.sh --cmd "$train_cmd" --nj 10 \
+  steps/online/nnet2/extract_ivectors_online.sh --cmd "$train_cmd" --nj 5 \
     data/train_rvb_min${min_seg_len}_hires_max2 \
     exp/nnet3/extractor $ivectordir || exit 1;
 
@@ -237,12 +237,19 @@ fi
 
 # NOTE: created by Cassio
 # this step is equivalent to stage 17 of mini librispeech recipe
+# The step by step guide is on the README files that comes gzipped with the
+# aspire pretrained available on Kaldi's website: https://kaldi-asr.org/models/m1
+# #Iamnotmakingthisup
 if [ $stage -le 15 ] ; then
   echo "[$(date +'%F %T')] $0: prepare online decoding" | lolcat
   steps/online/nnet3/prepare_online_decoding.sh \
     --mfcc-config conf/mfcc_hires.conf \
     --online-cmvn-config conf/online_cmvn.conf \
-    data/lang exp/nnet3/extractor $dir ${dir}_chain_online
+    $lang exp/nnet3/extractor $dir ${dir}_chain_online
+
+  echo "[$(date +'%F %T')] $0: creating graph" | lolcat
+  utils/mkgraph.sh --self-loop-scale 1.0 \
+    data/lang_pp_test ${dir}_chain_online ${dir}_chain_online/graph_pp
 
   echo "[$(date +'%F %T')] $0: online decode" | lolcat
   # note: we just give it "data/${data}" as it only uses the wav.scp, the
@@ -250,7 +257,7 @@ if [ $stage -le 15 ] ; then
   steps/online/nnet3/decode.sh \
     --acwt 1.0 --post-decode-acwt 10.0 \
     --nj 5 --cmd "$decode_cmd" \
-    $dir/graph_pp data/test_rvb_hires ${dir}_chain_online/decode_test_rvb_hires || exit 1
+    ${dir}_chain_online/graph_pp data/test_rvb_hires ${dir}_chain_online/decode_test_rvb_hires || exit 1
   grep -Rn WER ${dir}_chain_online/decode_test_rvb_hires | \
       utils/best_wer.sh | tee > ${dir}_chain_online/decode_test_rvb_hires/fbwer.txt
 fi
