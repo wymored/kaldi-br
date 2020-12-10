@@ -26,7 +26,7 @@ decode_bg=false # throw decoding processes to background?
 
 data_url=https://gitlab.com/fb-audio-corpora/lapsbm16k/-/archive/master/lapsbm16k-master.tar.gz
 lex_url=https://gitlab.com/fb-nlp/nlp-resources/-/raw/master/res/lexicon.utf8.dict.gz
-lm_url=https://gitlab.com/fb-nlp/nlp-resources/-/raw/master/res/lm.3gram.arpa.gz
+#lm_url=https://gitlab.com/fb-nlp/nlp-resources/-/raw/master/res/lm.3gram.arpa.gz
 #nlp_dir=${HOME}/fb-gitlab/fb-nlp/nlp-generator/ # TODO deploy heroku java server?
 
 . ./cmd.sh
@@ -50,9 +50,9 @@ if [ $stage -le -1 ]; then
 fi
 
 if [ $stage -le 0 ]; then
-  # CB: args 1 and 2 are swapped from the original
-  echo "[$(date +'%F %T')] $0: download lm" | lolcat
-  fblocal/download_lm.sh $data $lm_url data/local/lm || exit 1
+  ## CB: args 1 and 2 are swapped from the original
+  #echo "[$(date +'%F %T')] $0: download lm" | lolcat
+  #fblocal/download_lm.sh $data $lm_url data/local/lm || exit 1
 
   echo "[$(date +'%F %T')] $0: download lexicon" | lolcat
   fblocal/download_lexicon.sh $data $lex_url data/local/dict || exit 1
@@ -75,6 +75,7 @@ if [ $stage -le 1 ]; then
 
   # lm file had to be renamed inside this script
   echo "[$(date +'%F %T')] $0: create test lang" | lolcat
+  fblocal/fisher_train_lms.sh || exit 1
   fblocal/fisher_create_test_lang.sh || exit 1
 fi
 
@@ -153,7 +154,7 @@ fi
 if [ $stage -le 5 ]; then
   echo "[$(date +'%F %T')] $0: train deltas (2nd pass)" | lolcat
   steps/train_deltas.sh --cmd "$train_cmd" \
-    2000 10000 data/train data/lang exp/tri1_ali exp/tri2
+    2500 10000 data/train data/lang exp/tri1_ali exp/tri2
 
   # decode using the tri2 model
   if $decode ; then

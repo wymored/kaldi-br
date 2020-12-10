@@ -9,7 +9,7 @@
 # Cassio Batista - https://cassota.gitlab.io
 
 
-src_dir=$(readlink -f train_gentle)
+src_dir=$(readlink -f train_gentle2)
 
 if test $# -ne 1 ; then
   echo "usage: $0 [options] <proj_dir>"
@@ -27,7 +27,7 @@ if [ -d "$proj_dir" ] ; then
   if [ "$ans" != "y" ] ; then
     echo "$0: aborted." && exit 0
   else
-    rm -rf $proj_dir/s5/{data,exp,mfcc,conf,fblocal,fbutils}
+    rm -rf $proj_dir/s5/{data,exp,mfcc*,conf,fblocal,fbutils}
   fi
 # https://stackoverflow.com/questions/8426058/getting-the-parent-of-a-directory-in-bash
 elif [ "$(basename $(readlink -f $(dirname "$proj_dir")))" != "egs" ] ; then
@@ -36,12 +36,12 @@ elif [ "$(basename $(readlink -f $(dirname "$proj_dir")))" != "egs" ] ; then
 fi
 
 KALDI_ROOT="$(readlink -f $(dirname "$(dirname "$proj_dir")"))"
-aspire_dir=$KALDI_ROOT/egs/aspire/s5
+aishell2_dir=$KALDI_ROOT/egs/aishell2/s5
 proj_dir="$(readlink -f "$proj_dir")"/s5
 mkdir -p $proj_dir
-ln -sf $src_dir/{run.sh,conf,fblocal,fbutils} $proj_dir
-ln -sf $aspire_dir/{path.sh,local,steps,utils} $proj_dir
-sed 's/"queue.pl/"run.pl/g' $aspire_dir/cmd.sh > $proj_dir/cmd.sh
+ln -sf $src_dir/{run.sh,fblocal,fbutils} $proj_dir
+ln -sf $aishell2_dir/{path.sh,conf,local,steps,utils} $proj_dir
+sed 's/"queue.pl/"run.pl/g' $aishell2_dir/cmd.sh > $proj_dir/cmd.sh
 
 tree $proj_dir -I 'corpus|RIRS_NOISES|data|mfcc*|exp'
 echo "$0: all set up! check out your project at '$proj_dir'" | lolcat

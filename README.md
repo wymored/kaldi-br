@@ -118,6 +118,7 @@ $ cd kaldi/tools
 $ CC=gcc-8 CXX=g++-8 FC=gfortran-8 extras/check_dependencies.sh
 $ CC=gcc-8 CXX=g++-8 FC=gfortran-8 make -j 6
 $ CC=gcc-8 CXX=g++-8 FC=gfortran-8 extras/install_portaudio.sh
+$ CC=gcc-8 CXX=g++-8 FC=gfortran-8 extras/install_kaldi_lm.sh
 ```
 
 Finally, install Kaldi `src`.
@@ -167,7 +168,7 @@ $ ./run.sh
 
 ## Model training for phonetic alignment (Gentle)
 
-See [`train_gentle/`](./train_gentle) dir. Based on ASpIRE `nnet3` recipe.
+See [`train_gentle/`](./train_gentle) dir. Based on AISHELL-2 `nnet3` recipe.
 
 ```bash
 $ ./prep_train_gentle.sh /path/to/kaldi/egs/myproject
