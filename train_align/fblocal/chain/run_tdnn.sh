@@ -142,7 +142,7 @@ if [ $stage -le 11 ]; then
   # Get the alignments as lattices (gives the chain training more freedom).
   # use the same num-jobs as the alignments
   echo "[$(date +'%F %T')] $0: align lattices with fmllr" | lolcat
-  steps/align_fmllr_lats.sh --nj 75 --cmd "$train_cmd" ${lores_train_data_dir} \
+  steps/align_fmllr_lats.sh --nj 6 --cmd "$train_cmd" ${lores_train_data_dir} \
     data/lang $gmm_dir $lat_dir
   rm $lat_dir/fsts.*.gz # save space
 fi
@@ -244,7 +244,7 @@ if [ $stage -le 14 ]; then
     --trainer.num-chunk-per-minibatch=128,64 \
     --egs.chunk-width=$chunk_width \
     --egs.dir="$common_egs_dir" \
-    --egs.opts="--frames-overlap-per-eg 0 --online-cmvn $online_cmvn" \
+    --egs.opts="--frames-overlap-per-eg 0 --online-cmvn $online_cmvn --max-jobs-run 6 --max-shuffle-jobs-run 6" \
     --cleanup.remove-egs=$remove_egs \
     --use-gpu=true \
     --reporting.email="$reporting_email" \
